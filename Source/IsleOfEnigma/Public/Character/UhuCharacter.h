@@ -16,5 +16,10 @@ class ISLEOFENIGMA_API AUhuCharacter : public AUhuCharacterBase
 
 public:
 	AUhuCharacter();
-	
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
+private:
+	void InitAbilityActorInfo();
 };
