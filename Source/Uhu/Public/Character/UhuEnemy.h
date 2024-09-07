@@ -17,6 +17,12 @@ class UHU_API AUhuEnemy : public AUhuCharacterBase, public IEnemyInterface
 	
 public:
 	AUhuEnemy();
+
+	/** Enemy Interface */
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	/** end Enemy Interface */
+
+protected:
+	virtual void BeginPlay() override;
 };

@@ -13,6 +13,11 @@ AUhuCharacterBase::AUhuCharacterBase()
 
 }
 
+UAbilitySystemComponent* AUhuCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 void AUhuCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

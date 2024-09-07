@@ -13,6 +13,11 @@ UCLASS()
 class UHU_API AUhuCharacter : public AUhuCharacterBase
 {
 	GENERATED_BODY()
+	
 public:
 	AUhuCharacter();
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+private:
+	void InitAbilityActorInfo();
 };
