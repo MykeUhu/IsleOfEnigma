@@ -1,0 +1,44 @@
+Character erstellen 
+Derived on C++ Class !!
+Mesh einfügen
+Waffe
+
+
+
+rechtsklick in ordner create animation blueprint -> template
+
+rechtsklick > state machine (über default slot) zu output pose
+
+in main states
+add state (IdleWalkRun)
+in IdleWalkRun rechtsklick add blendspace player
+dann in event graph
+bei functions override -> Blueprint intitialze animation
+
+bei try get pawn owner - return value - cast to uhuEnemy (C++ Klasse)
+vom cast as uhuenemy -> get Character movement -> danach promote to variable
+dann bei variable das Character movement rausholen und validate Get 
+cahracter movement pin -> get velocity -> length XY -> promote to variable (GroundSpeed)
+und dann wieder im Idle WalkRUn state
+variable GroundSpeed rausziehen und an X heften
+
+***************************************************
+C++ Base ist fertig:
+ordner für enemy -> Blueprint erstellen all classes -> uhu Enemy
+Mesh einfügen
+Waffe
+
+*******************************************************
+Bei jeweiligen Enemy wenn das Template geacht wurde!
+
+im Enemy Ordner
+rechtsklick -> Animation -> Animation Blueprint Class
+ABP_Enemy bei Parent Class (unten)
+Und das dazugehörige Skeleton auswählen (SK_Goblin)
+
+dann reingehen in asset override
+bei idle walk run das blendspace auswählen
+
+dann bei BP_Goblin_Spear
+Select Mesh und bei anim class ABP_Goblin_Spear
+

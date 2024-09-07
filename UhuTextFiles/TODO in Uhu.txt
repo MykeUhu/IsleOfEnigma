@@ -1,0 +1,4 @@
+Resistenzen sind nicht verknüpft mit Attributen nur erstellt, sollten gear abhängig werden
+evtl neue GE erstellen für Resistenzen aber dann muss es komplett implementiert werden
+
+Video 160 auf udemy kurs
