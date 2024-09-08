@@ -3,6 +3,7 @@
 #include "Character/UhuCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/UhuAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/UhuPlayerController.h"
 #include "Player/UhuPlayerState.h"
@@ -35,6 +36,7 @@ void AUhuCharacter::InitAbilityActorInfo()
 	AUhuPlayerState* UhuPlayerState = GetPlayerState<AUhuPlayerState>();
 	check(UhuPlayerState);
 	UhuPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(UhuPlayerState, this);
+	Cast<UUhuAbilitySystemComponent>(UhuPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = UhuPlayerState->GetAbilitySystemComponent();
 	AttributeSet = UhuPlayerState->GetAttributeSet();
 

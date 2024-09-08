@@ -23,3 +23,7 @@ void AUhuCharacterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AUhuCharacterBase::InitAbilityActorInfo()
+{
+}
+

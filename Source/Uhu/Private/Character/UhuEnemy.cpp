@@ -33,5 +33,11 @@ void AUhuEnemy::UnHighlightActor()
 void AUhuEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	InitAbilityActorInfo();
+}
+
+void AUhuEnemy::InitAbilityActorInfo()
+{
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UUhuAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }
