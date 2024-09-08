@@ -82,8 +82,10 @@ void AUhuPlayerController::BeginPlay()
 	check(UhuContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-	Subsystem->AddMappingContext(UhuContext, 0);
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(UhuContext, 0);
+	}
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;

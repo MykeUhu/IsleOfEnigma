@@ -29,6 +29,7 @@ void AUhuEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 		UUhuAttributeSet* MutableUhuAttributeSet = const_cast<UUhuAttributeSet*>(UhuAttributeSet);
 		MutableUhuAttributeSet->SetHealth(UhuAttributeSet->GetHealth() + 25.f);
+		MutableUhuAttributeSet->SetMana(UhuAttributeSet->GetMana() + 25.f);
 		Destroy();
 	}
 }
