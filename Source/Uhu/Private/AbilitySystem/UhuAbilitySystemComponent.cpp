@@ -2,6 +2,7 @@
 
 
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
+#include "UhuGameplayTags.h"
 
 void UUhuAbilitySystemComponent::AbilityActorInfoSet()
 {
