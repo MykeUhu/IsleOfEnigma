@@ -30,6 +30,11 @@ void AUhuEnemy::UnHighlightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+int32 AUhuEnemy::GetPlayerLevel()
+{
+	return Level;
+}
+
 void AUhuEnemy::BeginPlay()
 {
 	Super::BeginPlay();

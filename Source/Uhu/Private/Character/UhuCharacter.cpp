@@ -1,7 +1,6 @@
 // Copyright MykeUhu
 
 #include "Character/UhuCharacter.h"
-
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -19,18 +18,28 @@ AUhuCharacter::AUhuCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 }
+
 void AUhuCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
 }
+
 void AUhuCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	// Init ability actor info for the Client
 	InitAbilityActorInfo();
 }
+
+int32 AUhuCharacter::GetPlayerLevel()
+{
+	const AUhuPlayerState* UhuPlayerState = GetPlayerState<AUhuPlayerState>();
+	check(UhuPlayerState);
+	return UhuPlayerState->GetPlayerLevel();
+}
+
 void AUhuCharacter::InitAbilityActorInfo()
 {
 	AUhuPlayerState* UhuPlayerState = GetPlayerState<AUhuPlayerState>();
@@ -39,7 +48,6 @@ void AUhuCharacter::InitAbilityActorInfo()
 	Cast<UUhuAbilitySystemComponent>(UhuPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = UhuPlayerState->GetAbilitySystemComponent();
 	AttributeSet = UhuPlayerState->GetAttributeSet();
-
 	if (AUhuPlayerController* UhuPlayerController = Cast<AUhuPlayerController>(GetController()))
 	{
 		if (AUhuHUD* UhuHUD = Cast<AUhuHUD>(UhuPlayerController->GetHUD()))
@@ -47,4 +55,5 @@ void AUhuCharacter::InitAbilityActorInfo()
 			UhuHUD->InitOverlay(UhuPlayerController, UhuPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+	InitializeDefaultAttributes();
 }
