@@ -5,11 +5,34 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
+#include "UhuGameplayTags.h"
 #include "Net/UnrealNetwork.h"
 
 UUhuAttributeSet::UUhuAttributeSet()
 {
-
+	const FUhuGameplayTags& GameplayTags = FUhuGameplayTags::Get();
+	//* Primary Attributes 
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Willpower, GetWillpowerAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Agility, GetAgilityAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Stamina, GetStaminaAttribute);
+	//** Secondary Attributes
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Evasion, GetEvasionAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CastSpeed, GetCastSpeedAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CooldownReduction, GetCooldownReductionAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaEfficacy, GetManaEfficiencyAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MovementSpeed, GetMovementSpeedAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MeleeAttackSpeed, GetMeleeAttackSpeedAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_PhysCritChance, GetPhysicalCritChanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ProjectileAttackSpeed, GetProjectileAttackSpeedAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ProjectileCritChance, GetProjectileCritChanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_SpellCritChance, GetSpellCritChanceAttribute);
 }
 
 void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -60,6 +83,7 @@ void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void UUhuAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
@@ -67,6 +91,56 @@ void UUhuAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	if (Attribute == GetManaAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+	}
+}
+
+void UUhuAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
+{
+	// Source = causer of the effect, Target = target of the effect (owner of this AS)
+
+	Props.EffectContextHandle = Data.EffectSpec.GetContext();
+	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+
+	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
+		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
+		if (Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
+		{
+			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
+			{
+				Props.SourceController = Pawn->GetController();
+			}
+		}
+		if (Props.SourceController)
+		{
+			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
+		}
+	}
+
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
+		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
+	}
+}
+
+void UUhuAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	FEffectProperties Props;
+	SetEffectProperties(Data, Props);
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 	}
 }
 
@@ -193,56 +267,4 @@ void UUhuAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMove
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, MovementSpeed, OldMovementSpeed);
 }
 
-
-
-void UUhuAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
-{
-	// Source = causer of the effect, Target = target of the effect (owner of this AS)
-
-	Props.EffectContextHandle = Data.EffectSpec.GetContext();
-	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
-
-	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
-	{
-		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
-		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
-		if (Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
-		{
-			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
-			{
-				Props.SourceController = Pawn->GetController();
-			}
-		}
-		if (Props.SourceController)
-		{
-			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
-		}
-	}
-
-	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
-	{
-		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
-		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
-	}
-}
-
-void UUhuAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-
-	FEffectProperties Props;
-	SetEffectProperties(Data, Props);
-	
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-	}
-	if (Data.EvaluatedData.Attribute == GetManaAttribute())
-	{
-		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
-	}
-
-}
 

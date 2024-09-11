@@ -47,6 +47,11 @@ struct FEffectProperties
 	ACharacter* TargetCharacter = nullptr;
 };
 
+// typedef is specific to the FGameplayAttribute() signature, but TStaticFunPtr is generic to any signature chosen
+//typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 /**
  * Class representing a set of attributes for an object or character.
  * Inherits from UAttributeSet. Clicked do you like this answer -> NO! (AI Generated)
@@ -61,6 +66,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 	
 	/*
 	 * Vital Attributes

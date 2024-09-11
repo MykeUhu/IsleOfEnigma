@@ -10,7 +10,17 @@
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
-
+	UUhuAttributeSet* AS = CastChecked<UUhuAttributeSet>(AttributeSet);
+	check(AttributeInfo);
+	for (auto& Pair : AS->TagsToAttributes)
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
+		[this, Pair](const FOnAttributeChangeData& Data)
+		{
+			BroadcastAttributeInfo(Pair.Key, Pair.Value());
+		}
+	);
+	}
 }
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
@@ -19,7 +29,15 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 
 	check(AttributeInfo);
 
-	FUhuAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(FUhuGameplayTags::Get().Attributes_Primary_Strength);
-	Info.AttributeValue = AS->GetStrength();
+	for (auto& Pair : AS->TagsToAttributes)
+	{
+		BroadcastAttributeInfo(Pair.Key, Pair.Value());
+	}
+}
+
+void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag, const FGameplayAttribute& Attribute) const
+{
+	FUhuAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(AttributeTag);
+	Info.AttributeValue = Attribute.GetNumericValue(AttributeSet);
 	AttributeInfoDelegate.Broadcast(Info);
 }
