@@ -2,6 +2,7 @@
 
 
 #include "AbilitySystem/UhuAttributeSet.h"
+
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
@@ -11,12 +12,14 @@
 UUhuAttributeSet::UUhuAttributeSet()
 {
 	const FUhuGameplayTags& GameplayTags = FUhuGameplayTags::Get();
-	//* Primary Attributes 
+	
+	//* Primary Attributes
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Willpower, GetWillpowerAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Agility, GetAgilityAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Stamina, GetStaminaAttribute);
+	
 	//** Secondary Attributes
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Evasion, GetEvasionAttribute);
@@ -38,24 +41,18 @@ UUhuAttributeSet::UUhuAttributeSet()
 void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	/*
-	* Vital Attributes
-	*/
-	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-
-	/*
-	 * Primary Attributes
-	*/
+ 
+	
+	 //* Primary Attributes
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Strength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Willpower, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Agility, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
 
-	/*
-	 * Secondary Attributes
-	 */
+	
+	 //* Secondary Attributes
 	// Strength
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, MeleeAttackSpeed, COND_None, REPNOTIFY_Always);
@@ -76,7 +73,11 @@ void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
-
+	
+	
+	//* Vital Attributes (must stay on end, that MaxHealth and MaxMana is set ohterwise clamping will set it to 0
+	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	
 }
 
@@ -144,10 +145,6 @@ void UUhuAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	}
 }
 
-/*
-* Vital Attributes
-*/
-
 void UUhuAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, Health, OldHealth);
@@ -157,12 +154,9 @@ void UUhuAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, Mana, OldMana);
 }
-
-
 /*
 * Primary Attributes
 */
-
 void UUhuAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, Strength, OldStrength);
@@ -187,11 +181,9 @@ void UUhuAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina) c
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, Stamina, OldStamina);
 }
-
 /*
 * Secondary Attributes
 */
-
 void UUhuAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUhuAttributeSet, Armor, OldArmor);
