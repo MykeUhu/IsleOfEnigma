@@ -24,23 +24,35 @@ class UHU_API AUhuPlayerController : public APlayerController
 public:
 	AUhuPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+	bool DebugToolsShowPathfinding = false;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> UhuContext;
+	
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
+	
 	void Move(const FInputActionValue& InputActionValue);
 	void CursorTrace();
+	
 	IEnemyInterface* LastActor;
 	IEnemyInterface* ThisActor;
+	
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
+	FHitResult CursorHit;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UUhuInputConfig> InputConfig;
+	
 	UPROPERTY()
 	TObjectPtr<UUhuAbilitySystemComponent> UhuAbilitySystemComponent;
 
@@ -58,4 +70,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	void AutoRun();
+
 };
