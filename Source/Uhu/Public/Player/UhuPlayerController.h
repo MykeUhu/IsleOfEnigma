@@ -4,11 +4,16 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
+#include "GameplayTagContainer.h"
 #include "UhuPlayerController.generated.h"
+
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class IEnemyInterface;
+class UUhuInputConfig;
+class UUhuAbilitySystemComponent;
+
 /**
  * 
  */
@@ -37,4 +42,16 @@ private:
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
 
+	
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UUhuInputConfig> InputConfig;
+	
+	UPROPERTY()
+	TObjectPtr<UUhuAbilitySystemComponent> UhuAbilitySystemComponent;
+
+	UUhuAbilitySystemComponent* GetASC();
 };

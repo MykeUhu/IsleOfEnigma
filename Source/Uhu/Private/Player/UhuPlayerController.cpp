@@ -3,7 +3,10 @@
 
 #include "Player/UhuPlayerController.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "EnhancedInputSubsystems.h"
+#include "AbilitySystem/UhuAbilitySystemComponent.h"
+#include "Input/UhuInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AUhuPlayerController::AUhuPlayerController()
@@ -76,6 +79,31 @@ void AUhuPlayerController::CursorTrace()
 	}
 }
 
+void AUhuPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+}
+
+void AUhuPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagReleased(InputTag);
+}
+
+void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);
+}
+
+UUhuAbilitySystemComponent* AUhuPlayerController::GetASC()
+{
+	if (UhuAbilitySystemComponent == nullptr)
+	{
+		UhuAbilitySystemComponent = Cast<UUhuAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	return UhuAbilitySystemComponent;
+}
 void AUhuPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -100,9 +128,11 @@ void AUhuPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Move);
+	UUhuInputComponent* UhuInputComponent = CastChecked<UUhuInputComponent>(InputComponent);
+	UhuInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Move);
+	UhuInputComponent->BindAbilityActions(InputConfig, this,
+		&ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased,
+		&ThisClass::AbilityInputTagHeld);
 }
 
 void AUhuPlayerController::Move(const FInputActionValue& InputActionValue)

@@ -14,6 +14,7 @@ AUhuCharacter::AUhuCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -48,6 +49,7 @@ void AUhuCharacter::InitAbilityActorInfo()
 	Cast<UUhuAbilitySystemComponent>(UhuPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = UhuPlayerState->GetAbilitySystemComponent();
 	AttributeSet = UhuPlayerState->GetAttributeSet();
+	
 	if (AUhuPlayerController* UhuPlayerController = Cast<AUhuPlayerController>(GetController()))
 	{
 		if (AUhuHUD* UhuHUD = Cast<AUhuHUD>(UhuPlayerController->GetHUD()))
@@ -56,4 +58,5 @@ void AUhuCharacter::InitAbilityActorInfo()
 		}
 	}
 	InitializeDefaultAttributes();
+	AddCharacterAbilities();
 }

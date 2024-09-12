@@ -14,7 +14,6 @@ UOverlayWidgetController* AUhuHUD::GetOverlayWidgetController(const FWidgetContr
 		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
 		OverlayWidgetController->BindCallbacksToDependencies();
-		return OverlayWidgetController;
 	}
 	return OverlayWidgetController;
 }
@@ -34,10 +33,10 @@ void AUhuHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_UhuHUD"));
 	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_UhuHUD"));
-
+	
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	OverlayWidget = Cast<UUhuUserWidget>(Widget);
-
+	
 	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
 	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
@@ -45,3 +44,4 @@ void AUhuHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();
 }
+

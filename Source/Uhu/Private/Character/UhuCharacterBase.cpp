@@ -2,6 +2,7 @@
 
 #include "Character/UhuCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/UhuAbilitySystemComponent.h"
 
 
 AUhuCharacterBase::AUhuCharacterBase()
@@ -45,4 +46,11 @@ void AUhuCharacterBase::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
 
+void AUhuCharacterBase::AddCharacterAbilities()
+{
+	UUhuAbilitySystemComponent* UhuASC = CastChecked<UUhuAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+
+	UhuASC->AddCharacterAbilities(StartupAbilities);
+}
 
