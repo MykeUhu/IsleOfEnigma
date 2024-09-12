@@ -72,5 +72,4 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
-
 };

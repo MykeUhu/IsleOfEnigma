@@ -2,7 +2,6 @@
 
 
 #include "Player/UhuPlayerController.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "UhuGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
@@ -16,8 +15,6 @@
 AUhuPlayerController::AUhuPlayerController()
 {
 	bReplicates = true;
-	DebugToolsShowPathfinding = false;
-
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
@@ -27,7 +24,6 @@ void AUhuPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 	AutoRun();
 }
-
 void AUhuPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
@@ -36,7 +32,6 @@ void AUhuPlayerController::AutoRun()
 		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
 		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
 		ControlledPawn->AddMovementInput(Direction);
-
 		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
 		if (DistanceToDestination <= AutoRunAcceptanceRadius)
 		{
@@ -44,13 +39,15 @@ void AUhuPlayerController::AutoRun()
 		}
 	}
 }
+
 void AUhuPlayerController::CursorTrace()
 {
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
+
 	LastActor = ThisActor;
 	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
-	
+
 	if (LastActor != ThisActor)
 	{
 		if (LastActor) LastActor->UnHighlightActor();
@@ -66,7 +63,6 @@ void AUhuPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 		bAutoRunning = false;
 	}
 }
-
 void AUhuPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FUhuGameplayTags::Get().InputTag_LMB))
@@ -92,7 +88,6 @@ void AUhuPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 					//Uhu Dev Tools -> Show In Debug Menu bubbles
 					if (DebugToolsShowPathfinding) DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Green, false, 5.f);
-					
 				}
 				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true;
@@ -102,7 +97,6 @@ void AUhuPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		bTargeting = false;
 	}
 }
-
 void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FUhuGameplayTags::Get().InputTag_LMB))
@@ -118,8 +112,6 @@ void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
-
-		FHitResult Hit;
 		if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
 
 		if (APawn* ControlledPawn = GetPawn())
@@ -129,7 +121,6 @@ void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		}
 	}
 }
-
 UUhuAbilitySystemComponent* AUhuPlayerController::GetASC()
 {
 	if (UhuAbilitySystemComponent == nullptr)
