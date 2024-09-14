@@ -25,6 +25,12 @@ void AUhuCharacterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+FVector AUhuCharacterBase::GetCombatSocketLocation()
+{
+	check(Weapon);
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
 void AUhuCharacterBase::InitAbilityActorInfo()
 {
 }
